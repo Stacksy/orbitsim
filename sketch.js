@@ -2,7 +2,7 @@ let star;
 let planets = [];
 let gravitySlider
 let bgSlider;
-let planetsNum = 5;
+let planetsNum = 11;
 let unstable = 0.2;
 
 function setup() {
