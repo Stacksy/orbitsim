@@ -1,19 +1,25 @@
-var futuraFont;
+let inconsolata;
 let star;
-let G = 100; //this is the gravity
+//let G = 100; this is the gravity
 let planets = [];
 let numPlanets = 10;
 let extraMomentum = 0.25;
 
 function preload() {
-  futuraFont = loadFont('./assets/futuraBook.otf');
+  inconsolata = loadFont('/assets/inconsolata.otf');
   starTexture = loadImage('/assets/sun.jpg');
   planetTexture = loadImage('/assets/planet.jpg');
 }
 
 
 function setup() {
-  textFont(futuraFont);
+  gravitySlider = createSlider(1, 1001, 100, 100); //new gravity
+  gravitySlider.position(10, 10);
+
+  textFont(inconsolata);
+  textSize(width / 3);
+  textAlign(CENTER, CENTER);
+
   createCanvas(windowWidth, windowHeight, WEBGL);
   background(0);
 
@@ -27,7 +33,7 @@ function setup() {
     //velocity V = (2πa) / 2
     let planetVel = planetPos.copy();
     planetVel.rotate(HALF_PI);
-    planetVel.setMag( sqrt(G * star.mass / planetPos.mag()) );
+    planetVel.setMag( sqrt(gravitySlider.value() * star.mass / planetPos.mag()) );
     
     //this reverses some planets directions
     if(random(1) < 0.2){
@@ -50,6 +56,7 @@ function draw() {
   background(180);
   orbitControl();
   axis();
+  text('p5.js', 10, 10);
   //lights();
   //line(100, 100, 1000, 0, 0, 0)
   texture(starTexture);
@@ -121,7 +128,7 @@ function body(_mass, _pos, _vel){
   this.attract = function(child){
     let R = dist(this.pos.x, this.pos.y, this.pos.z, child.pos.x, child.pos.y, child.pos.z);
     let F = this.pos.copy().sub(child.pos);
-    F.setMag( (G * this.mass * child.mass) / (R * R));
+    F.setMag( (gravitySlider.value() * this.mass * child.mass) / (R * R));
     child.applyForces(F);
   }
 
