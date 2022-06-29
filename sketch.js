@@ -2,10 +2,12 @@ var futuraFont;
 let star;
 let G = 100; //this is the gravity
 let planets = [];
-let numPlanets = 2;
+let numPlanets = 10;
 
 function preload() {
   futuraFont = loadFont('./assets/futuraBook.otf');
+  starTexture = loadImage('/assets/sun.jpg');
+  planetTexture = loadImage('/assets/planet.jpg');
 }
 
 
@@ -18,9 +20,9 @@ function setup() {
   
   for (let i = 0; i < numPlanets; i++){
     //position
-    let rad = random(star.rad * 2, min(windowWidth / 3, windowHeight / 4));
+    let rad = random(star.rad * 4, star.rad * 10);
     let theta = random(TWO_PI);
-    let planetPos = createVector(rad * cos(theta), rad * sin(theta), rad * tan(theta));
+    let planetPos = createVector(rad * cos(theta), rad * sin(theta), 10); //10 is the ammount of wobble the planets have on z axis
     //velocity V = (2πa) / 2
     let planetVel = planetPos.copy();
     planetVel.rotate(HALF_PI);
@@ -35,16 +37,18 @@ function setup() {
 
 function draw() {
   angleMode(DEGREES); 
-  background(0);
+  background(180);
   orbitControl();
   axis();
-
+  texture(starTexture);
   star.show();
+  texture(planetTexture);
   
-  for (let i = 0; i < planets.length; i++){
-    star.attract(planets[i]);
-    planets[i].update();
-    planets[i].show();
+  for (let planet of planets){
+    tint(planet.tint[0], planet.tint[1], planet.tint[2]);
+    star.attract(planet);
+    planet.update();
+    planet.show();
   }
 
 
@@ -70,18 +74,21 @@ function body(_mass, _pos, _vel){
   this.pos = _pos;
   this.vel = _vel;
   this.rad = this.mass;
+  this.tint = [Math.floor(random(0, 255)), Math.floor(random(0, 255)), Math.floor(random(0, 255)),];
   
   this.show = function() {
-    fill(255);
+    noStroke();
     translate(this.pos.x, this.pos.y, this.pos.z);
     sphere(this.rad);
     translate(-this.pos.x, -this.pos.y, this.pos.z);
+    
   }
 
   this.update = function() {
     this.pos.x += this.vel.x;
     this.pos.y += this.vel.y;
     this.pos.z += this.vel.z;
+    
   }
 
   this.applyForces = function(F) {
