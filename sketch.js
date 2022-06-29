@@ -3,6 +3,7 @@ let star;
 let G = 100; //this is the gravity
 let planets = [];
 let numPlanets = 10;
+let extraMomentum = 0.25;
 
 function preload() {
   futuraFont = loadFont('./assets/futuraBook.otf');
@@ -27,8 +28,16 @@ function setup() {
     let planetVel = planetPos.copy();
     planetVel.rotate(HALF_PI);
     planetVel.setMag( sqrt(G * star.mass / planetPos.mag()) );
+    
+    //this reverses some planets directions
+    if(random(1) < 0.2){
+      planetVel.mult(-1);
+    }
 
-    planets.push ( new body(25, planetPos, planetVel) );
+    //in order to make orbits elliptical
+    planetVel.mult( random(1 - extraMomentum, 1 + extraMomentum) );
+
+    planets.push ( new body(random(10, 30), planetPos, planetVel) );
 
 
   }
@@ -37,14 +46,18 @@ function setup() {
 
 function draw() {
   angleMode(DEGREES); 
+  //background(0, 0, 0, 0);
   background(180);
   orbitControl();
   axis();
+  //lights();
+  //line(100, 100, 1000, 0, 0, 0)
   texture(starTexture);
   star.show();
-  texture(planetTexture);
   
   for (let planet of planets){
+    planet.drawTrail();
+    texture(planetTexture);
     tint(planet.tint[0], planet.tint[1], planet.tint[2]);
     star.attract(planet);
     planet.update();
@@ -69,12 +82,14 @@ function axis() {
 }
 
 
+
 function body(_mass, _pos, _vel){
   this.mass = _mass;
   this.pos = _pos;
   this.vel = _vel;
   this.rad = this.mass;
-  this.tint = [Math.floor(random(0, 255)), Math.floor(random(0, 255)), Math.floor(random(0, 255)),];
+  this.tint = [Math.floor(random(0, 255)), Math.floor(random(0, 255)), Math.floor(random(0, 255))];
+  this.path = [];
   
   this.show = function() {
     noStroke();
@@ -82,12 +97,17 @@ function body(_mass, _pos, _vel){
     sphere(this.rad);
     translate(-this.pos.x, -this.pos.y, this.pos.z);
     
+    
   }
 
   this.update = function() {
     this.pos.x += this.vel.x;
     this.pos.y += this.vel.y;
     this.pos.z += this.vel.z;
+    this.path.push(this.pos.copy());
+    if(this.path.length > 100) { //path cannot grow larger than limit
+      this.path.splice(0, 1);
+    }
     
   }
 
@@ -105,4 +125,11 @@ function body(_mass, _pos, _vel){
     child.applyForces(F);
   }
 
+  this.drawTrail = function(){
+    fill(255);
+    for(let i = 0; i < this.path.length - 2; i++){
+      line(this.path[i].x, this.path[i].y, this.path[i].z, this.path[i + 1].x, this.path[i + 1].y, this.path[i + 1].z);
+    }
+    line(100, 100, 1000, 0, 0, 0);
+  }
 }
