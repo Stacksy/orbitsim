@@ -4,6 +4,7 @@ let star;
 let planets = [];
 let numPlanets = 10;
 let extraMomentum = 0.25;
+let moons = [];
 
 function preload() {
   inconsolata = loadFont("/assets/inconsolata.otf");
@@ -39,7 +40,7 @@ function setup() {
     if (random(1) < 0.2) {
       planetVel.mult(-1);
     }
-    
+  
     //in order to make orbits elliptical
     planetVel.mult(random(1 - extraMomentum, 1 + extraMomentum));
     planets.push(new body(random(10, 30), planetPos, planetVel));
@@ -57,7 +58,9 @@ function draw() {
   //line(100, 100, 1000, 0, 0, 0)
   texture(starTexture);
   //rotateY(millis() / 2000);
+
   star.show();
+  
   
   for (let planet of planets) {
     planet.drawTrail();
@@ -66,9 +69,24 @@ function draw() {
     star.attract(planet);
     planet.update();
     planet.show();
-  }
 
+    for (let other of planets){
+      if(planet != other && planet.collides(other)) {
+        background(0);
+      }
+    }
+  }
   pop();
+ 
+
+  push();
+  fill('red');
+  textFont(inconsolata);
+  textSize(100);
+  textAlign(CENTER, CENTER)
+  text("F: " + Math.floor(frameRate()), 200, 110);
+  pop();
+
 }
 
 function axis() {
@@ -137,7 +155,7 @@ function body(_mass, _pos, _vel) {
   };
 
   this.drawTrail = function () {
-    fill(255);
+    fill(255); //trail color
     for (let i = 0; i < this.path.length - 2; i++) {
       //line(this.path[i].x, this.path[i].y, this.path[i].z, this.path[i + 1].x, this.path[i + 1].y, this.path[i + 1].z); this doesnt work for some reason
       translate(this.path[i].x, this.path[i].y, this.path[i].z);
@@ -147,4 +165,11 @@ function body(_mass, _pos, _vel) {
     }
     //line(100, 100, 1000, 0, 0, 0);
   };
+
+  this.collides = function (other){
+    let d = dist(this.pos.x, this.pos.y, this.pos.z, other.pos.x, other.pos.y, other.pos.z);
+   // console.log(d + " should be bigger");
+    //console.log(this.rad + other.rad);
+    return (d < this.rad + other.rad);
+  }
 }
