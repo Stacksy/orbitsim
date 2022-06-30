@@ -60,9 +60,16 @@ function draw() {
   //rotateY(millis() / 2000);
 
   star.show();
-  
-  
-  for (let planet of planets) {
+    
+  for (let planet of planets) {  
+    //collision
+    for (let other of planets){
+      if(planet != other && planet.collides(other)) {
+        console.log("removed planet at index " + planets.indexOf(planet));
+        planets.splice(planets.indexOf(planet), 1);
+      }
+    }
+    
     planet.drawTrail();
     texture(planetTexture);
     tint(planet.tint[0], planet.tint[1], planet.tint[2]);
@@ -70,12 +77,9 @@ function draw() {
     planet.update();
     planet.show();
 
-    for (let other of planets){
-      if(planet != other && planet.collides(other)) {
-        background(0);
-      }
-    }
   }
+  
+    
   pop();
  
 
@@ -168,8 +172,6 @@ function body(_mass, _pos, _vel) {
 
   this.collides = function (other){
     let d = dist(this.pos.x, this.pos.y, this.pos.z, other.pos.x, other.pos.y, other.pos.z);
-   // console.log(d + " should be bigger");
-    //console.log(this.rad + other.rad);
-    return (d < this.rad + other.rad);
+    return (d < Math.floor( this.rad + other.rad ));
   }
 }
