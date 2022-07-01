@@ -5,8 +5,11 @@ let planets = [];
 let numPlanets = 10;
 let extraMomentum = 0.25;
 let moons = [];
+let skybox;
 
 function preload() {
+  //whats up with him thern ??
+  skybox = loadImage("/assets/stars1.png")
   inconsolata = loadFont("/assets/inconsolata.otf");
   starTexture = loadImage("/assets/sun.jpg");
   planetTexture = loadImage("/assets/planet.jpg");
@@ -27,14 +30,14 @@ function setup() {
     //position
     let rad = random(star.rad * 4, star.rad * 10);
     let theta = random(TWO_PI);
-    let planetPos = createVector(rad * cos(theta), rad * sin(theta), 2.5); //10 is the ammount of wobble the planets have on z axis
+    let planetPos = createVector(rad * cos(theta), rad * sin(theta), 2.5); //2.5 is the ammount of wobble the planets have on z axis
     
     //velocity V = (2πa) / 2
+    //pi symbol?>??????????????????????????? tf??!?!?!?!????
+    //what !????
     let planetVel = planetPos.copy();
     planetVel.rotate(HALF_PI);
-    planetVel.setMag(
-      sqrt((gravitySlider.value() * star.mass) / planetPos.mag())
-    );
+    planetVel.setMag( sqrt((gravitySlider.value() * star.mass) / planetPos.mag()) );
     
     //this reverses some planets directions
     if (random(1) < 0.2) {
@@ -54,19 +57,25 @@ function draw() {
   //background(0, 0, 0, 0);
   background(bgSlider.value());
   axis();
+
+  //this makes lights vvvv
   //lights();
+  //this makes a line vvvv
   //line(100, 100, 1000, 0, 0, 0)
   texture(starTexture);
+  //this makes is go weeeeeeeeeeeeeeeeeee
   //rotateY(millis() / 2000);
 
   star.show();
     
   for (let planet of planets) {  
     //collision
+    // of of n^2? ?? TF SOOOOOO LONG SHEEESH
+    //more likle O(log(n))
+    //ummm linked list much?
     for (let other of planets){
       if(planet != other && planet.collides(other)) {
-        console.log("removed planet at index " + planets.indexOf(planet));
-        planets.splice(planets.indexOf(planet), 1);
+        boom(planet, other);
       }
     }
     
@@ -78,11 +87,8 @@ function draw() {
     planet.show();
 
   }
-  
-    
+   
   pop();
- 
-
   push();
   fill('red');
   textFont(inconsolata);
@@ -91,6 +97,35 @@ function draw() {
   text("F: " + Math.floor(frameRate()), 200, 110);
   pop();
 
+  // noStroke();
+  // texture(skybox);
+  // textureWrap(REPEAT)
+  // sphere(5000,100,100)
+}
+//what happens after collision
+function boom(planet, other) {
+  let p = planet.rad;
+  let o = other.rad;
+  
+  if(p - 4 > o){ 
+    console.log("removed planet at index " + planets.indexOf(other));
+    console.log("mass of " + p + " > " + o);
+    planets.splice(planets.indexOf(other), 1);   
+  }
+  if(o - 4 > p){
+    console.log("removed planet at index " + planets.indexOf(planet));
+    console.log("mass of " + o + " > " + p);
+    planets.splice(planets.indexOf(planet), 1);
+  }
+  // else{
+  //   console.log("removed planet at index " + planets.indexOf(other));
+  //   console.log("removed planet at index " + planets.indexOf(planet));
+  //   console.log("mass of " + o + " and " + p);
+  //   planets.splice(planets.indexOf(planet), 1);  
+  //   planets.splice(planets.indexOf(other), 1); 
+    
+  // }
+  
 }
 
 function axis() {
@@ -171,7 +206,9 @@ function body(_mass, _pos, _vel) {
   };
 
   this.collides = function (other){
-    let d = dist(this.pos.x, this.pos.y, this.pos.z, other.pos.x, other.pos.y, other.pos.z);
+    //ing'utu palmer by thomas draper & nathan mark redfearn & alexandros seth skanananananananananavis
+    let pos = other.pos
+    let d = dist(this.pos.x, this.pos.y, this.pos.z, pos.x, pos.y, pos.z);
     return (d < Math.floor( this.rad + other.rad ));
   }
 }
