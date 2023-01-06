@@ -6,20 +6,23 @@ let numPlanets = 10;
 let extraMomentum = 0.25;
 let moons = [];
 let skybox;
+let checked;
 
 function preload() {
   //whats up with him thern ??
-  skybox = loadImage("/assets/stars1.png")
+  //skybox = loadImage("/assets/stars1.png")
   inconsolata = loadFont("/assets/inconsolata.otf");
   starTexture = loadImage("/assets/sun.jpg");
   planetTexture = loadImage("/assets/planet.jpg");
 }
 
 function setup() {
-  gravitySlider = createSlider(1, 1001, 100, 100); //new gravity
+  gravitySlider = createSlider(1, 1001, 100, 10); //new gravity
   gravitySlider.position(10, 10);
   bgSlider = createSlider(0, 255, 180);
-  bgSlider.position(1770, 940);
+  bgSlider.position(windowWidth-150, windowHeight-50);
+  collisionCheckbox = createCheckbox('Collision', false);
+  collisionCheckbox.position(200, 10);
 
   createCanvas(windowWidth, windowHeight, WEBGL);
   background(0);
@@ -73,10 +76,12 @@ function draw() {
     // of of n^2? ?? TF SOOOOOO LONG SHEEESH
     //more likle O(log(n))
     //ummm linked list much?
-    for (let other of planets){
-      if(planet != other && planet.collides(other)) {
-        boom(planet, other);
-      }
+    if(collisionCheckbox.checked()){
+      for (let other of planets){
+        if(planet != other && planet.collides(other)) {
+          boom(planet, other);
+        }
+      }   
     }
     
     planet.drawTrail();
@@ -117,13 +122,14 @@ function boom(planet, other) {
     console.log("mass of " + o + " > " + p);
     planets.splice(planets.indexOf(planet), 1);
   }
+  
   // else{
   //   console.log("removed planet at index " + planets.indexOf(other));
   //   console.log("removed planet at index " + planets.indexOf(planet));
   //   console.log("mass of " + o + " and " + p);
   //   planets.splice(planets.indexOf(planet), 1);  
   //   planets.splice(planets.indexOf(other), 1); 
-    
+//
   // }
   
 }
