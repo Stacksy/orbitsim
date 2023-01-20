@@ -1,4 +1,4 @@
-//let inconsolata;
+let inconsolata;
 let star;
 //let G = 100; this is the gravity
 let planets = [];
@@ -11,7 +11,7 @@ let checked;
 function preload() {
   //whats up with him thern ??
   //skybox = loadImage("/assets/stars1.png")
-  //inconsolata = loadFont("/assets/inconsolata.otf");
+  inconsolata = loadFont("/assets/inconsolata.otf");
   starTexture = loadImage("/assets/sun.jpg");
   planetTexture = loadImage("/assets/planet.jpg");
 }
